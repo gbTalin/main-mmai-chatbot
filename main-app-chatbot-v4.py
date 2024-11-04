@@ -83,6 +83,7 @@ def download_db():
     """
     Function: Download the database file from Google Drive
 
+    G Drive v4 db link: https://drive.google.com/file/d/1EdPUHQeCzOSDwPVMHHr28pFLBo7pt62h/view?usp=drive_link
     Returns:
         None
 
@@ -93,8 +94,8 @@ def download_db():
         # https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=drive_link
         https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=sharing
     """
-    if not os.path.exists("supplier_database-v3.db"):
-        gdown.download('https://drive.google.com/uc?id=1y4o-U-dhAclDrDqthwMLmFpk34Yi4xJT', 'supplier_database-v3.db', quiet=False)
+    if not os.path.exists("supplier_database-v4.db"):
+        gdown.download('https://drive.google.com/uc?id=1EdPUHQeCzOSDwPVMHHr28pFLBo7pt62h', 'supplier_database-v4.db', quiet=False)
     # link = https://drive.google.com/file/d/18chgV_UwlWSYTEP1W579vYZWQhsBRrEI/view?usp=drive_link
     if not os.path.exists("search_filter_data.csv"):
         gdown.download('https://drive.google.com/uc?id=1RPy429rGkmMxNbW8hhceWyaAgyhwlDYG', 'search_filter_data.csv', quiet=False)
@@ -124,9 +125,9 @@ def load_db(propdefaults):
     # data = sqlite3.connect("supplier-database.db")
     """
     if propdefaults:
-        db_uri = f"sqlite:///supplier_database-v3.db"
+        db_uri = f"sqlite:///supplier_database-v4.db"
         database = SQLDatabase.from_uri(db_uri)
-        conn = sqlite3.connect("supplier_database-v3.db", check_same_thread=False)
+        conn = sqlite3.connect("supplier_database-v4.db", check_same_thread=False)
         return database, conn
     else:
         db_uri = f"sqlite:///supplier_prop.db"
