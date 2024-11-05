@@ -44,7 +44,6 @@ import plotly.graph_objs as go
 import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_score
 import ast
-import sys
 import itertools
 # --------------------------------------------------------- #
 
@@ -545,11 +544,6 @@ def format_businesses_to_markdown(data: str):
     # print("\n".join(markdown_list))
     return "\n".join(markdown_list)
 
-"""You should integrate the data size check after any database query that potentially fetches a large amount of data. 
-This could be after your get_response function, where the SQL query results are fetched and processed."""
-
-def get_data_size(data):
-    return sys.getsizeof(data)
 
 # --------------------------------------------------------- #
 # - Function to get the response from the SQL query         #
@@ -569,11 +563,6 @@ def get_response(sql_query_response: str):
     if sql_query_response:
         try:
             result = st.session_state.data.execute(sql_query_response).fetchall()
-            # Check the size of result
-            if get_data_size(result) > 400000:  # Adjust the size limit as per your needs
-                st.warning("The result set is too large. Please refine your query to be more specific.")
-                return ["Result set too large. Refine your query.", [], pd.DataFrame()]
-
             result = str(result).replace("\\n\\n", "")
             result = str(result).replace("\\n", "")
 
@@ -1252,23 +1241,6 @@ with tab1:
                         generate_mk(message.content)
 
         user_query = col1.chat_input("Type your Businesses Query here...", key="user_query")
-
-        """For instance, in the block where you handle user queries or file uploads, ensure to check the data size right after retrieving it"""
-
-        if user_query is not None and user_query.strip() != "":
-        # Processing the user query
-            try:
-                sql_query_response = get_sql_chain(user_query, st.session_state.db, st.session_state.chat_history)
-                response, result, df = get_response(sql_query_response)
-                if response[0] == "Result set too large. Refine your query.":
-                    st.error(response[0])
-                elif len(df) > 0:
-                    st.success("Here are the Matching Businesses:")
-                    generate_mk_ai(response[0], len(df))
-                else:
-                    st.error("No Matching Businesses Found.")
-            except Exception as e:
-                st.error("Error processing your query: " + str(e))
 
         with upper:
             if user_query is not None and user_query.strip() != "":
