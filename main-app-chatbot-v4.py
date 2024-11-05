@@ -83,20 +83,19 @@ def download_db():
     """
     Function: Download the database file from Google Drive
 
-    G Drive v4 db link: https://drive.google.com/file/d/1EdPUHQeCzOSDwPVMHHr28pFLBo7pt62h/view?usp=drive_link
+    G Drive v4 db link: https://drive.google.com/file/d/1nEeKDtMG3UJV6ZPR9L3MsvP-0lw7Ub3m/view?usp=sharing
     Returns:
         None
 
     Other:
     # if not os.path.exists("supplier-database.db"):
-        # https://drive.google.com/file/d/1W_FC90VgjTDilEoa4F5escONym5Ndy3M/view?usp=sharing
         # gdown.download('https://drive.google.com/uc?id=167gji0LKnOJElgIA0flocOI8s_ZFgxGs', 'supplier-database.db', 
         # quiet=False)
         # https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=drive_link
         https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=sharing
     """
     if not os.path.exists("supplier_database-v3.db"):
-        gdown.download('https://drive.google.com/uc?id=1W_FC90VgjTDilEoa4F5escONym5Ndy3M', 'supplier_database-v3.db', quiet=False)
+        gdown.download('https://drive.google.com/uc?id=1nEeKDtMG3UJV6ZPR9L3MsvP-0lw7Ub3m', 'supplier_database-v3.db', quiet=False)
     # link = https://drive.google.com/file/d/18chgV_UwlWSYTEP1W579vYZWQhsBRrEI/view?usp=drive_link
     if not os.path.exists("search_filter_data.csv"):
         gdown.download('https://drive.google.com/uc?id=1RPy429rGkmMxNbW8hhceWyaAgyhwlDYG', 'search_filter_data.csv', quiet=False)
@@ -479,27 +478,6 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
 # --------------------------------------------------------- #
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# --------------------------------------------------------- #
-# # Business Data Formatting Functions                      #
-# - Function to format the businesses into a markdown list  #
-# - Formats the data array into a markdown list             #
-# --------------------------------------------------------- # 
 def format_businesses_to_markdown(data: str):
     """
     Function: Format the businesses into a markdown list
@@ -522,7 +500,7 @@ def format_businesses_to_markdown(data: str):
         if len(item) == 6 and count <= 10:  # Ensure each tuple has exactly 6 elements
             company_name, address, city, state, zip_code, services = item
             contact = "".join(np.random.choice(list("0123456789"), 10))
-            if company_name is not None and address != "Not Provided":
+            if company_name is not None and address != "Not Provided" and services is not None:
                 if "\"" in company_name:
                     company_name = company_name.replace("\"", "")
                     company_name = company_name.title()
@@ -535,28 +513,28 @@ def format_businesses_to_markdown(data: str):
                     if zip_code != "000000":
                         markdown_list.append(
                             f"""
-                            {count}. **{company_name}**
-                                - ***Contact:*** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
-                                - ***Services Offered:*** {services}\n
-                                - ***Address:*** {address}, {city}, {state} - {zip_code}
+                            {count}. *{company_name}*
+                                - **Contact:** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
+                                - **Services Offered:** {services}\n
+                                - **Address:** {address}, {city}, {state} - {zip_code}
                             """
                         )
                     else:
                         markdown_list.append(
                             f"""
-                            {count}. **{company_name}**
-                                - ***Contact:*** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
-                                - ***Services Offered:*** {services}\n
-                                - ***Address:*** {address}, {city}, {state}.
+                            {count}. *{company_name}*
+                                - **Contact:** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
+                                - **Services Offered:** {services}\n
+                                - **Address:** {address}, {city}, {state}.
                             """
                         )
                     count += 1
                 # else:
                 #     markdown_list.append(
                 #         f"""
-                #         {count}. **{company_name}**
-                #             - ***Contact:*** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
-                #             - ***Services Offered:*** {services}
+                #         {count}. *{company_name}*
+                #             - **Contact:** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
+                #             - **Services Offered:** {services}
                 #         """
                 #     )
 
@@ -565,23 +543,6 @@ def format_businesses_to_markdown(data: str):
         #     return f"Error: Item at index {count} does not contain exactly 6 elements."
     # print("\n".join(markdown_list))
     return "\n".join(markdown_list)
-# --------------------------------------------------------- #
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # --------------------------------------------------------- #
