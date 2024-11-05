@@ -83,7 +83,7 @@ def download_db():
     """
     Function: Download the database file from Google Drive
 
-    G Drive v4 db link: https://drive.google.com/file/d/1JwBFvcWCkUf4k5_j_pcymsSjHfgewgJA/view?usp=sharing
+    G Drive v4 db link: https://drive.google.com/file/d/15Z_1pur83RhJTuDXXxiqe-e9rQM0_J16/view?usp=sharing
     Returns:
         None
 
@@ -95,7 +95,7 @@ def download_db():
         https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=sharing
     """
     if not os.path.exists("supplier_database-v3.db"):
-        gdown.download('https://drive.google.com/uc?id=1JwBFvcWCkUf4k5_j_pcymsSjHfgewgJA', 'supplier_database-v3.db', quiet=False)
+        gdown.download('https://drive.google.com/uc?id=15Z_1pur83RhJTuDXXxiqe-e9rQM0_J16', 'supplier_database-v3.db', quiet=False)
     # link = https://drive.google.com/file/d/18chgV_UwlWSYTEP1W579vYZWQhsBRrEI/view?usp=drive_link
     if not os.path.exists("search_filter_data.csv"):
         gdown.download('https://drive.google.com/uc?id=1RPy429rGkmMxNbW8hhceWyaAgyhwlDYG', 'search_filter_data.csv', quiet=False)
