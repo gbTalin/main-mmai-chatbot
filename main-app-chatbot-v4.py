@@ -95,7 +95,7 @@ def download_db():
         https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=sharing
     """
     if not os.path.exists("supplier_database-v4.db"):
-        gdown.download('https://drive.google.com/uc?id=1EdPUHQeCzOSDwPVMHHr28pFLBo7pt62h', 'supplier_database-v4.db', quiet=False)
+        gdown.download('https://drive.google.com/file/d/1EdPUHQeCzOSDwPVMHHr28pFLBo7pt62h/view?usp=drive_link', 'supplier_database-v4.db', quiet=False)
     # link = https://drive.google.com/file/d/18chgV_UwlWSYTEP1W579vYZWQhsBRrEI/view?usp=drive_link
     if not os.path.exists("search_filter_data.csv"):
         gdown.download('https://drive.google.com/uc?id=1RPy429rGkmMxNbW8hhceWyaAgyhwlDYG', 'search_filter_data.csv', quiet=False)
