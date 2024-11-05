@@ -83,13 +83,13 @@ def download_db():
     """
     Function: Download the database file from Google Drive
 
-    G Drive v4 db link: https://drive.google.com/file/d/1nEeKDtMG3UJV6ZPR9L3MsvP-0lw7Ub3m/view?usp=sharing
+    G Drive v4 db link: https://drive.google.com/file/d/1JwBFvcWCkUf4k5_j_pcymsSjHfgewgJA/view?usp=sharing
     Returns:
         None
 
     Other:
     # if not os.path.exists("supplier-database.db"):
-        # gdown.download('https://drive.google.com/uc?id=167gji0LKnOJElgIA0flocOI8s_ZFgxGs', 'supplier-database.db', 
+        # gdown.download('https://drive.google.com/uc?id=1JwBFvcWCkUf4k5_j_pcymsSjHfgewgJA', 'supplier-database.db', 
         # quiet=False)
         # https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=drive_link
         https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=sharing
