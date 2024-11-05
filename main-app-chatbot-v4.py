@@ -44,6 +44,7 @@ import plotly.graph_objs as go
 import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_score
 import ast
+import sys
 import itertools
 # --------------------------------------------------------- #
 
@@ -545,6 +546,9 @@ def format_businesses_to_markdown(data: str):
     return "\n".join(markdown_list)
 
 
+def get_data_size(data):
+    return sys.getsizeof(data)
+
 # --------------------------------------------------------- #
 # - Function to get the response from the SQL query         #
 # - Get the response from the SQL query                     #
@@ -563,6 +567,12 @@ def get_response(sql_query_response: str):
     if sql_query_response:
         try:
             result = st.session_state.data.execute(sql_query_response).fetchall()
+            # Check the size of result
+            if get_data_size(result) > 300000:  # Adjust the size limit as per your needs
+                st.warning("The result set is too large. Please refine your query to be more specific.")
+                return ["Result set too large. Refine your query.", [], pd.DataFrame()]
+
+            # Proceed if data size is acceptable
             result = str(result).replace("\\n\\n", "")
             result = str(result).replace("\\n", "")
 
