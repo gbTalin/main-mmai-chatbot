@@ -173,13 +173,10 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
     """
     # The SQL Query should be formulated to match the services provided by the companies, and should also match the conditions of search.
 
-    schema = db.get_table_info()  # Fetching the table schema for dynamic query building
-
     with tqdm(total=4, desc="Generating the SQL Query...") as pbar:
 
         pbar.update(1)
         pbar.set_description("Generating the Template...")
-
         template = """
             <SYS> 
             As a Master SQL Generator at a company, you excel in Filtering, Ranking, Sorting, and Retrieving Data from a SQLite3 Database. You are currently interacting with a user who is seeking companies that offer specific services from your company's database. Given the table schema provided below and the details from your ongoing conversation with the user, craft a SQL query in SQLite3 that would accurately respond to the user's inquiry. Ensure the query is tailored to the user's specific needs based on the conversation history, or if the question is new and not previously discussed, tailor the query according to the table schema provided.
@@ -202,13 +199,6 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
             </INST>
             
             For example:
-            SQL Query: SELECT company, address, city, state, zip, servicetype
-                       FROM supplierdb
-                       WHERE servicetype LIKE '%{user_query}%' 
-                       OR naics_description LIKE '%{user_query}%'
-                       ORDER BY company
-                       LIMIT 10;
-                    
             Question: List the companies that provide creative or production services.
             SQL Query:  SELECT company, address, city, state, zip, servicetype 
                         FROM supplierdb 
