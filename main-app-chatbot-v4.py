@@ -78,28 +78,27 @@ OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 # - The database file is used to query the businesses       #
 # - The database file is stored in the cache                #
 # --------------------------------------------------------- #
-@st.cache_data()
-def download_db():
-    """
-    Function: Download the database file from Google Drive
+# @st.cache_data()
+# def download_db():
+#     """
+#     Function: Download the database file from Google Drive
 
-    G Drive v4 db link: https://drive.google.com/file/d/15Z_1pur83RhJTuDXXxiqe-e9rQM0_J16/view?usp=sharing
-    Returns:
-        None
+#     Returns:
+#         None
 
-    Other:
-    # if not os.path.exists("supplier-database.db"):
-        # gdown.download('https://drive.google.com/uc?id=1JwBFvcWCkUf4k5_j_pcymsSjHfgewgJA', 'supplier-database.db', 
-        # quiet=False)
-        # https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=drive_link
-        https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=sharing
-    """
-    if not os.path.exists("supplier_database-v3.db"):
-        gdown.download('https://drive.google.com/uc?id=15Z_1pur83RhJTuDXXxiqe-e9rQM0_J16', 'supplier_database-v3.db', quiet=False)
-    # link = https://drive.google.com/file/d/18chgV_UwlWSYTEP1W579vYZWQhsBRrEI/view?usp=drive_link
-    if not os.path.exists("search_filter_data.csv"):
-        gdown.download('https://drive.google.com/uc?id=1RPy429rGkmMxNbW8hhceWyaAgyhwlDYG', 'search_filter_data.csv', quiet=False)
-download_db()
+#     Other:
+#     # if not os.path.exists("supplier-database.db"):
+#         # gdown.download('https://drive.google.com/uc?id=167gji0LKnOJElgIA0flocOI8s_ZFgxGs', 'supplier-database.db', 
+#         # quiet=False)
+#         # https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=drive_link
+#         https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=sharing
+#     """
+#     if not os.path.exists("supplier_database-v3.db"):
+#         gdown.download('https://drive.google.com/uc?id=1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai', 'supplier_database-v3.db', quiet=False)
+#     # link = https://drive.google.com/file/d/18chgV_UwlWSYTEP1W579vYZWQhsBRrEI/view?usp=drive_link
+#     if not os.path.exists("search_filter_data.csv"):
+#         gdown.download('https://drive.google.com/uc?id=18chgV_UwlWSYTEP1W579vYZWQhsBRrEI', 'search_filter_data.csv', quiet=False)
+# download_db()
 # --------------------------------------------------------- #
 
 
@@ -174,10 +173,13 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
     """
     # The SQL Query should be formulated to match the services provided by the companies, and should also match the conditions of search.
 
+    schema = db.get_table_info()  # Fetching the table schema for dynamic query building
+
     with tqdm(total=4, desc="Generating the SQL Query...") as pbar:
 
         pbar.update(1)
         pbar.set_description("Generating the Template...")
+
         template = """
             <SYS> 
             As a Master SQL Generator at a company, you excel in Filtering, Ranking, Sorting, and Retrieving Data from a SQLite3 Database. You are currently interacting with a user who is seeking companies that offer specific services from your company's database. Given the table schema provided below and the details from your ongoing conversation with the user, craft a SQL query in SQLite3 that would accurately respond to the user's inquiry. Ensure the query is tailored to the user's specific needs based on the conversation history, or if the question is new and not previously discussed, tailor the query according to the table schema provided.
@@ -200,6 +202,13 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
             </INST>
             
             For example:
+            SQL Query: SELECT company, address, city, state, zip, servicetype
+                       FROM supplierdb
+                       WHERE servicetype LIKE '%{user_query}%' 
+                       OR naics_description LIKE '%{user_query}%'
+                       ORDER BY company
+                       LIMIT 10;
+                    
             Question: List the companies that provide creative or production services.
             SQL Query:  SELECT company, address, city, state, zip, servicetype 
                         FROM supplierdb 
@@ -478,6 +487,27 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
 # --------------------------------------------------------- #
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# --------------------------------------------------------- #
+# # Business Data Formatting Functions                      #
+# - Function to format the businesses into a markdown list  #
+# - Formats the data array into a markdown list             #
+# --------------------------------------------------------- # 
 def format_businesses_to_markdown(data: str):
     """
     Function: Format the businesses into a markdown list
@@ -513,28 +543,28 @@ def format_businesses_to_markdown(data: str):
                     if zip_code != "000000":
                         markdown_list.append(
                             f"""
-                            {count}. *{company_name}*
-                                - **Contact:** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
-                                - **Services Offered:** {services}\n
-                                - **Address:** {address}, {city}, {state} - {zip_code}
+                            {count}. **{company_name}**
+                                - ***Contact:*** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
+                                - ***Services Offered:*** {services}\n
+                                - ***Address:*** {address}, {city}, {state} - {zip_code}
                             """
                         )
                     else:
                         markdown_list.append(
                             f"""
-                            {count}. *{company_name}*
-                                - **Contact:** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
-                                - **Services Offered:** {services}\n
-                                - **Address:** {address}, {city}, {state}.
+                            {count}. **{company_name}**
+                                - ***Contact:*** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
+                                - ***Services Offered:*** {services}\n
+                                - ***Address:*** {address}, {city}, {state}.
                             """
                         )
                     count += 1
                 # else:
                 #     markdown_list.append(
                 #         f"""
-                #         {count}. *{company_name}*
-                #             - **Contact:** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
-                #             - **Services Offered:** {services}
+                #         {count}. **{company_name}**
+                #             - ***Contact:*** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
+                #             - ***Services Offered:*** {services}
                 #         """
                 #     )
 
@@ -543,6 +573,23 @@ def format_businesses_to_markdown(data: str):
         #     return f"Error: Item at index {count} does not contain exactly 6 elements."
     # print("\n".join(markdown_list))
     return "\n".join(markdown_list)
+# --------------------------------------------------------- #
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # --------------------------------------------------------- #
