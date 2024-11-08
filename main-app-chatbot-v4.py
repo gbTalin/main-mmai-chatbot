@@ -206,7 +206,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                         OR UPPER(servicetype) LIKE UPPER('%production%')
                         OR UPPER(servicetype) LIKE UPPER('%/creative%')
                         OR naics LIKE '5414%' OR naics LIKE '7225%' 
-                        ORDER BY company
+                        ORDER BY services
                         LIMIT 10;
 
             Question: Filter by California.
@@ -330,7 +330,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                         OR UPPER(servicetype) LIKE UPPER('%/creative%'))
                         OR naics LIKE '5414%' 
                         OR naics LIKE '7225%' 
-                        ORDER BY company
+                        ORDER BY services
                         LIMIT 10;
 
             Question: Limit by ITAR Registered.
@@ -348,7 +348,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     OR UPPER(servicetype) LIKE UPPER('%/creative%'))
                     OR naics LIKE '5414%' 
                     OR naics LIKE '7225%'
-                    ORDER BY company 
+                    ORDER BY services 
                     LIMIT 10;
 
             Question: List companies providing IT services.
@@ -362,7 +362,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     ) 
 
                     WHERE naics LIKE '5415%'
-                    ORDER BY company
+                    ORDER BY services
                     LIMIT 10;
 
             Question: List the next 10 companies providing IT services.
@@ -372,14 +372,14 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     WHERE 
                     UPPER(services) LIKE UPPER('%IT%') 
                     OR naics LIKE '5415%'
-                    ORDER BY company
+                    ORDER BY services
                     LIMIT 10, 10;
 
             Question: List companies with ISO certification.
             SQL Query: SELECT company, address, city, state, zip, servicetype   
                         FROM supplierdb 
                         WHERE "ISO Standard" IS NOT NULL
-                        ORDER BY company
+                        ORDER BY services
                         LIMIT 10;
 
             Question: List companies in California.
@@ -414,7 +414,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     ) 
 
                     WHERE naics LIKE '5413%'
-                    ORDER BY company
+                    ORDER BY services
                     LIMIT 10;
             
             Question: Find manufacturing companies.
@@ -430,7 +430,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     WHERE naics LIKE '31%' 
                         OR naics LIKE '32%' 
                         OR naics LIKE '33%'
-                    ORDER BY company
+                    ORDER BY services
                     LIMIT 10;
             
             Question: Find aviation and aerospace companies.
@@ -445,7 +445,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     ) 
 
                     WHERE naics LIKE '581%'
-                    ORDER BY company
+                    ORDER BY services
                     LIMIT 10;
             
             Your turn:
