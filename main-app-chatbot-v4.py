@@ -13,36 +13,25 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_community.utilities import SQLDatabase
 from langchain_core.output_parsers import StrOutputParser
 from PyPDF2 import PdfReader
-from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.document_loaders.parsers.pdf import PyPDFParser
 from langchain.chains.summarize import load_summarize_chain
 from langchain_text_splitters import CharacterTextSplitter
-from langchain.chains.llm import LLMChain
 from langchain_core.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter             
+from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
-from streamlit_extras import grid, row
 from streamlit_extras.bottom_container import bottom
-from streamlit_extras.row import row
 import pandas as pd
 import numpy as np
-import gdown
-import zipfile, time
+import time
 import sqlite3, re
 from tqdm import tqdm
 import tempfile, os
 import streamlit as st
 import folium
-from streamlit_folium import folium_static, st_folium
+from streamlit_folium import folium_static
 import math
 import os
 from sklearn.cluster import KMeans
-from random import random
-import plotly.graph_objs as go
-import matplotlib.pyplot as plt
-from sklearn.metrics import silhouette_score
 import ast
 import itertools
 # --------------------------------------------------------- #
