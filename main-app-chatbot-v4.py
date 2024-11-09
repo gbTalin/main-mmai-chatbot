@@ -1212,7 +1212,7 @@ with st.sidebar:
 query_global = "SELECT * from supplierdb LIMIT 2;"
 xlsx_query = None
 xlsx_data = None
-tab1, tab2 = st.tabs(["Advanced AI Chatbot", "Basic Search"])
+tab1, tab2 = st.tabs(["Advanced AI Chatbot", "Enhanced AI Powered Filters"])
 pdf_upl_prpt = True
 db_upl_prpt = True
 # --------------------------------------------------------- #
