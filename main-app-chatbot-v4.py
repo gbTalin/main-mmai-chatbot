@@ -1623,7 +1623,7 @@ with tab2:
     else:
         with dfc:
             co = st.columns([1, 1, 1])
-            co[1].image("manage_search.png", use_column_width=True, output_format="PNG")
+            co[1].image("manage_search.png", use_container_width=True, output_format="PNG")
         msc.info("Use the Search Filters to find the Matching Businesses.", icon=":material/dashboard:")
 # --------------------------------------------------------- #
 
