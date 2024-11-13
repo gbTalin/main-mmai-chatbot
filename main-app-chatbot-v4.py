@@ -13,36 +13,25 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_community.utilities import SQLDatabase
 from langchain_core.output_parsers import StrOutputParser
 from PyPDF2 import PdfReader
-from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.document_loaders.parsers.pdf import PyPDFParser
 from langchain.chains.summarize import load_summarize_chain
 from langchain_text_splitters import CharacterTextSplitter
-from langchain.chains.llm import LLMChain
 from langchain_core.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter             
+from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
-from streamlit_extras import grid, row
 from streamlit_extras.bottom_container import bottom
-from streamlit_extras.row import row
 import pandas as pd
 import numpy as np
-import gdown
-import zipfile, time
+import time
 import sqlite3, re
 from tqdm import tqdm
 import tempfile, os
 import streamlit as st
 import folium
-from streamlit_folium import folium_static, st_folium
+from streamlit_folium import folium_static
 import math
 import os
 from sklearn.cluster import KMeans
-from random import random
-import plotly.graph_objs as go
-import matplotlib.pyplot as plt
-from sklearn.metrics import silhouette_score
 import ast
 import itertools
 # --------------------------------------------------------- #
@@ -78,28 +67,27 @@ OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 # - The database file is used to query the businesses       #
 # - The database file is stored in the cache                #
 # --------------------------------------------------------- #
-@st.cache_data()
-def download_db():
-    """
-    Function: Download the database file from Google Drive
+# @st.cache_data()
+# def download_db():
+#     """
+#     Function: Download the database file from Google Drive
 
-    G Drive v4 db link: https://drive.google.com/file/d/15Z_1pur83RhJTuDXXxiqe-e9rQM0_J16/view?usp=sharing
-    Returns:
-        None
+#     Returns:
+#         None
 
-    Other:
-    # if not os.path.exists("supplier-database.db"):
-        # gdown.download('https://drive.google.com/uc?id=1JwBFvcWCkUf4k5_j_pcymsSjHfgewgJA', 'supplier-database.db', 
-        # quiet=False)
-        # https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=drive_link
-        https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=sharing
-    """
-    if not os.path.exists("supplier_database-v3.db"):
-        gdown.download('https://drive.google.com/uc?id=15Z_1pur83RhJTuDXXxiqe-e9rQM0_J16', 'supplier_database-v3.db', quiet=False)
-    # link = https://drive.google.com/file/d/18chgV_UwlWSYTEP1W579vYZWQhsBRrEI/view?usp=drive_link
-    if not os.path.exists("search_filter_data.csv"):
-        gdown.download('https://drive.google.com/uc?id=1RPy429rGkmMxNbW8hhceWyaAgyhwlDYG', 'search_filter_data.csv', quiet=False)
-download_db()
+#     Other:
+#     # if not os.path.exists("supplier-database.db"):
+#         # gdown.download('https://drive.google.com/uc?id=167gji0LKnOJElgIA0flocOI8s_ZFgxGs', 'supplier-database.db', 
+#         # quiet=False)
+#         # https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=drive_link
+#         https://drive.google.com/file/d/1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai/view?usp=sharing
+#     """
+#     if not os.path.exists("supplier_database-v3.db"):
+#         gdown.download('https://drive.google.com/uc?id=1XvahREHGxTcQkq1S7ZIT5-7wqH-7I5ai', 'supplier_database-v3.db', quiet=False)
+#     # link = https://drive.google.com/file/d/18chgV_UwlWSYTEP1W579vYZWQhsBRrEI/view?usp=drive_link
+#     if not os.path.exists("search_filter_data.csv"):
+#         gdown.download('https://drive.google.com/uc?id=18chgV_UwlWSYTEP1W579vYZWQhsBRrEI', 'search_filter_data.csv', quiet=False)
+# download_db()
 # --------------------------------------------------------- #
 
 
@@ -207,7 +195,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                         OR UPPER(servicetype) LIKE UPPER('%production%')
                         OR UPPER(servicetype) LIKE UPPER('%/creative%')
                         OR naics LIKE '5414%' OR naics LIKE '7225%' 
-                        ORDER BY company
+                        ORDER BY services
                         LIMIT 10;
 
             Question: Filter by California.
@@ -331,7 +319,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                         OR UPPER(servicetype) LIKE UPPER('%/creative%'))
                         OR naics LIKE '5414%' 
                         OR naics LIKE '7225%' 
-                        ORDER BY company
+                        ORDER BY services
                         LIMIT 10;
 
             Question: Limit by ITAR Registered.
@@ -349,7 +337,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     OR UPPER(servicetype) LIKE UPPER('%/creative%'))
                     OR naics LIKE '5414%' 
                     OR naics LIKE '7225%'
-                    ORDER BY company 
+                    ORDER BY services 
                     LIMIT 10;
 
             Question: List companies providing IT services.
@@ -363,7 +351,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     ) 
 
                     WHERE naics LIKE '5415%'
-                    ORDER BY company
+                    ORDER BY services
                     LIMIT 10;
 
             Question: List the next 10 companies providing IT services.
@@ -373,14 +361,14 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     WHERE 
                     UPPER(services) LIKE UPPER('%IT%') 
                     OR naics LIKE '5415%'
-                    ORDER BY company
+                    ORDER BY services
                     LIMIT 10, 10;
 
             Question: List companies with ISO certification.
             SQL Query: SELECT company, address, city, state, zip, servicetype   
                         FROM supplierdb 
                         WHERE "ISO Standard" IS NOT NULL
-                        ORDER BY company
+                        ORDER BY services
                         LIMIT 10;
 
             Question: List companies in California.
@@ -415,7 +403,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     ) 
 
                     WHERE naics LIKE '5413%'
-                    ORDER BY company
+                    ORDER BY services
                     LIMIT 10;
             
             Question: Find manufacturing companies.
@@ -431,7 +419,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     WHERE naics LIKE '31%' 
                         OR naics LIKE '32%' 
                         OR naics LIKE '33%'
-                    ORDER BY company
+                    ORDER BY services
                     LIMIT 10;
             
             Question: Find aviation and aerospace companies.
@@ -446,7 +434,7 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
                     ) 
 
                     WHERE naics LIKE '581%'
-                    ORDER BY company
+                    ORDER BY services
                     LIMIT 10;
             
             Your turn:
@@ -478,6 +466,27 @@ def get_sql_chain(user_query: str, db: SQLDatabase, chat_history: list):
 # --------------------------------------------------------- #
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# --------------------------------------------------------- #
+# # Business Data Formatting Functions                      #
+# - Function to format the businesses into a markdown list  #
+# - Formats the data array into a markdown list             #
+# --------------------------------------------------------- # 
 def format_businesses_to_markdown(data: str):
     """
     Function: Format the businesses into a markdown list
@@ -513,28 +522,28 @@ def format_businesses_to_markdown(data: str):
                     if zip_code != "000000":
                         markdown_list.append(
                             f"""
-                            {count}. *{company_name}*
-                                - **Contact:** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
-                                - **Services Offered:** {services}\n
-                                - **Address:** {address}, {city}, {state} - {zip_code}
+                            {count}. **{company_name}**
+                                - ***Contact:*** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
+                                - ***Services Offered:*** {services}\n
+                                - ***Address:*** {address}, {city}, {state} - {zip_code}
                             """
                         )
                     else:
                         markdown_list.append(
                             f"""
-                            {count}. *{company_name}*
-                                - **Contact:** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
-                                - **Services Offered:** {services}\n
-                                - **Address:** {address}, {city}, {state}.
+                            {count}. **{company_name}**
+                                - ***Contact:*** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
+                                - ***Services Offered:*** {services}\n
+                                - ***Address:*** {address}, {city}, {state}.
                             """
                         )
                     count += 1
                 # else:
                 #     markdown_list.append(
                 #         f"""
-                #         {count}. *{company_name}*
-                #             - **Contact:** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
-                #             - **Services Offered:** {services}
+                #         {count}. **{company_name}**
+                #             - ***Contact:*** +1 ({contact[:3]}) {contact[3:6]}-{contact[6:]}
+                #             - ***Services Offered:*** {services}
                 #         """
                 #     )
 
@@ -543,6 +552,23 @@ def format_businesses_to_markdown(data: str):
         #     return f"Error: Item at index {count} does not contain exactly 6 elements."
     # print("\n".join(markdown_list))
     return "\n".join(markdown_list)
+# --------------------------------------------------------- #
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # --------------------------------------------------------- #
@@ -1175,7 +1201,7 @@ with st.sidebar:
 query_global = "SELECT * from supplierdb LIMIT 2;"
 xlsx_query = None
 xlsx_data = None
-tab1, tab2 = st.tabs(["Advanced AI Chatbot", "Basic Search"])
+tab1, tab2 = st.tabs(["Advanced AI Chatbot", "Enhanced AI Powered Filters"])
 pdf_upl_prpt = True
 db_upl_prpt = True
 # --------------------------------------------------------- #
@@ -1586,7 +1612,7 @@ with tab2:
     else:
         with dfc:
             co = st.columns([1, 1, 1])
-            co[1].image("manage_search.png", use_column_width=True, output_format="PNG")
+            co[1].image("manage_search.png", use_container_width=True, output_format="PNG")
         msc.info("Use the Search Filters to find the Matching Businesses.", icon=":material/dashboard:")
 # --------------------------------------------------------- #
 
